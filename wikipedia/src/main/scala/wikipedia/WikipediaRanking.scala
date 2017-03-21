@@ -47,7 +47,7 @@ object WikipediaRanking {
    * to the Wikipedia pages in which it occurs.
    */
   def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] = {
-    rdd.flatMap(article => langs.filter(lang => article.text.split(" ").contains(lang)).map(_ -> article))
+    rdd.flatMap(article => langs.filter(article.text.split(" ").contains(_)).map(_ -> article))
       .groupByKey()
   }
 
@@ -69,7 +69,7 @@ object WikipediaRanking {
    *   several seconds.
    */
   def rankLangsReduceByKey(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = {
-    rdd.flatMap(article => langs.filter(lang => article.text.split(" ").contains(lang)).map(_ -> 1)).
+    rdd.flatMap(article => langs.filter(article.text.split(" ").contains(_)).map(_ -> 1)).
       reduceByKey(_ + _).sortBy(-_._2).collect().toList
   }
 
